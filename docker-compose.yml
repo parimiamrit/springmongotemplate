@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  app:
+    depends_on: 
+      - prometheus
+      - grafana
+      - jaeger
+      - mongo
+    image: 'springmongotemplate:v1'
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/petsDB
+    container_name: app
+    ports:
+      - 8080:8080
+  
+  mongo:
+   image: mongo
+   container_name: mongo
+   restart: always
+   environment:
+     MONGO_INITDB_DATABASE: petsDB
+   ports: 
+    - 27017:27017
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./cfg/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+  
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - 3003:3003
+    volumes:
+      - ./cfg/grafana/provisioning:/etc/grafana/provisioning
+      - ./cfg/grafana/grafana.ini:/etc/grafana/grafana.ini
+    env_file:
+      - ./cfg/grafana/grafana.env
+  
+  jaeger:
+    depends_on: 
+      - prometheus
+    image: jaegertracing/all-in-one:${JAEGER_IMAGE_TAG:-latest}
+    volumes:
+      - "./cfg/jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+    command: --query.ui-config /etc/jaeger/jaeger-ui.json
+    environment:
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+      - PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR=${PROMETHEUS_QUERY_SUPPORT_SPANMETRICS_CONNECTOR:-true}
+      - PROMETHEUS_QUERY_NAMESPACE=${PROMETHEUS_QUERY_NAMESPACE:-}
+      - PROMETHEUS_QUERY_DURATION_UNIT=${PROMETHEUS_QUERY_DURATION_UNIT:-}
+      - PROMETHEUS_QUERY_NORMALIZE_CALLS=true
+      - PROMETHEUS_QUERY_NORMALIZE_DURATION=true
+    ports:
+      - "16686:16686"
+      - "4317:4317"

@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: "springmongotemplate"
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+management:
+  server:
+    port: 8080
+  endpoints:
+    web:
+      exposure:
+        include: health, prometheus
+  metrics:
+    tags:
+      application: springmongotemplate
+  tracing:
+    sampling:
+      probability: 1.0
+tracing:
+  url: http://jaeger:4317
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.data.mongodb.core: DEBUG
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.springframework.data.mongodb.core.ReactiveMongoTemplate: DEBUG
+    io.swagger.v3: DEBUG

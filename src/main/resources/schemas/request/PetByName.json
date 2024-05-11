@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "collection": "petDetails",
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

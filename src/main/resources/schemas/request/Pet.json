@@ -1,0 +1,21 @@
+{
+  "collection": "petDetails",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "number"
+    },
+    "birthday": {
+    "type": "date"
+    }
+  }
+}
